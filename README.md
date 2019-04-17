@@ -1,4 +1,4 @@
-## 1. 什么是跨域
+## 什么是跨域
 **跨域**： 浏览器不能执行其他网站的脚本, 由浏览器的同源策略导致
 **同源策略** ： 域名、协议、端口均相同
 
@@ -14,15 +14,19 @@
 
 
 ## 实现跨域
-- [1. 什么是跨域](#1-%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%A8%E5%9F%9F)
+- [什么是跨域](#%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%A8%E5%9F%9F)
 - [实现跨域](#%E5%AE%9E%E7%8E%B0%E8%B7%A8%E5%9F%9F)
-- [1.jsonp](#1jsonp)
-- [2.cors](#2cors)
-- [3.document.domain](#3documentdomain)
-- [4.postMessage](#4postmessage)
-- [5.windowName](#5windowname)
+  - [1.jsonp](#1jsonp)
+  - [2.cors](#2cors)
+  - [3.document.domain](#3documentdomain)
+  - [4.postMessage](#4postmessage)
+  - [5.windowName](#5windowname)
+  - [6.location.hash](#6locationhash)
+  - [7.websocket](#7websocket)
+  - [8.nginx](#8nginx)
+  - [9.node](#9node)
 
-## 1.jsonp
+### 1.jsonp
 Jsonp (json with padding) 
 动态创建script标签
 script 标签没有同源策略限制, 可以跨域, 兼容性好
@@ -31,7 +35,7 @@ script 标签没有同源策略限制, 可以跨域, 兼容性好
 1. 只能get请求
 2. xss 攻击 跨站脚本攻击(Cross Site Scripting)
 
-## 2.cors
+### 2.cors
 CORS: "跨域资源共享"（Cross-origin resource sharing）
 
   1. Access-Control-Allow-Origin
@@ -53,7 +57,7 @@ CORS: "跨域资源共享"（Cross-origin resource sharing）
 需要浏览器和服务器同时支持, 目前所有的浏览器都支持, IE10及以上
 
 
-## 3.document.domain
+### 3.document.domain
 适用主域相同, 不同子域之间的跨域
 设置相同的主域, 使同源检测通过
 ```
@@ -62,7 +66,7 @@ CORS: "跨域资源共享"（Cross-origin resource sharing）
 document.domain = 'abin.com';
 ```
 
-## 4.postMessage
+### 4.postMessage
 完全不同域的跨域
 html5引入的API, 用于多窗口间的跨页面通信
 
@@ -81,4 +85,36 @@ html5引入的API, 用于多窗口间的跨页面通信
 **安全性**
 采用双向安全机制, 通过`event.origin` 来判断是否来自正确可靠的发送方
 
-## 5.windowName
+### 5.windowName
+window.name: name值在不同的页面(甚至不同域名),
+ 加载后依旧存在, size 在2MB
+通过iframe的src属性由外域转向本域,
+跨域数据即由iframe的window.name从外域转到本域。
+
+### 6.location.hash
+通过hash值的传递,来实现 a -> c
+a、b : 3000
+c: 4000
+利用b 的传递
+
+### 7.websocket
+WebSocket: HTML5的持久化协议, 实现了浏览器与服务器的双工通信, 也是跨越的一种解决方案。
+WebSocket 是一种双向通信协议, 在建立连接后,WebSocket的 server 与 client 都能主动向双方发送或接收消息。
+WebSocket 在建立时需要借助http协议, 建立好之后就和HTTP无关了
+
+### 8.nginx
+**nginx反向代理**: 需要搭建一个中转nginx服务器, 用于转发请求
+实现思路: 通过nginx配置一个代理服务器：跳板机(域名与domain1相同, 端口不同),
+反向代理访问domain2的接口, 并且可以修改 cookie 中domain信息,方便当前域cookie写入, 实现跨域登录
+
+### 9.node
+node中间件代理
+同源策略是浏览器要遵循的策略, 而服务器向服务器请求无需遵循同源策略;
+代理服务器需要做:
+- 接收客户端请求。
+- 将请求转发给服务器。
+- 拿到服务器 响应 数据。
+- 将 响应转发给客户端。
+
+浏览器向代理服务器发送请求, 也要遵循同源策略。
+
